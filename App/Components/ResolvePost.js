@@ -86,13 +86,17 @@ export default class ResolvePost extends Component {
 		        	<View style={{flex: 0.6, padding: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#666'}}>
 						<TouchableOpacity 
 							style={{padding: 10}}
-							onPress={()=> 
+							onPress={()=>
 							  sendbird.startMessaging(
 							    this.state.CounterPartId,
 							    {
 							      successFunc: (data) => {
 							        console.log('success');
-							        console.log(data);
+							        console.log(data.channel.id);
+							        Actions.Chat({
+							        	channel: data.channel.id,
+							        	friend: data.members.name,
+							        });
 							      },
 							      errorFunc: (status, error) => {
 							        console.log(status, error);
@@ -117,8 +121,7 @@ export default class ResolvePost extends Component {
 	renderRow(rowData) {
 		return (
 			<View>
-			<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}
-				onPress={()=> sendbird.message("Hejsan bögar")}>
+			<TouchableOpacity style={{flexDirection: 'row', alignItems: 'center'}}>
 				<Image 
 					source={{uri: rowData.img}} 
 					style={{borderRadius: 10, marginTop: 16, height: 45, width: 45}} />
