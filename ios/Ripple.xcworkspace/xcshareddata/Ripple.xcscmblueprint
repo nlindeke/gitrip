@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "79D28FA7FEEAD29E38773001E799B78FD71177EC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "79D28FA7FEEAD29E38773001E799B78FD71177EC" : 0,
+    "17253E632F0DA93796E14EE896C4086C55F8BBFA" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "30D511DC-9CC7-44EB-A309-12568BC970D1",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "79D28FA7FEEAD29E38773001E799B78FD71177EC" : "Ripple\/",
+    "17253E632F0DA93796E14EE896C4086C55F8BBFA" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Ripple",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ios\/Ripple.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/NKLINDKE\/Ripple.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "17253E632F0DA93796E14EE896C4086C55F8BBFA"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/nlindeke\/Ripple.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "79D28FA7FEEAD29E38773001E799B78FD71177EC"
+    }
+  ]
+}
