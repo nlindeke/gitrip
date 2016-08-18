@@ -91,8 +91,7 @@ export default class ResolvePost extends Component {
 							    this.state.CounterPartId,
 							    {
 							      successFunc: (data) => {
-							        console.log('success');
-							        console.log(data.channel.id);
+							        console.log(data.members.name);
 							        Actions.Chat({
 							        	channel: data.channel.id,
 							        	friend: data.members.name,
