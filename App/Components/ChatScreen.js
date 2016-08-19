@@ -13,6 +13,7 @@ import {
   NativeModules,
   Image,
   ListView,
+  ScrollView,
 } from 'react-native';
 
 import {Actions} from 'react-native-router-flux';
@@ -34,64 +35,93 @@ const FBSDK = require('react-native-fbsdk');
 
 module.exports = React.createClass({
   getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     return {
-      dataSource: ds.cloneWithRows([]),
-      channel: null,
       message: '',
+      messageList: []
     };
   },
   componentWillMount: function() {
-    // Get Channel Info
-    sendbird.getChannelInfo((data) => {
-      this.setState({channel: data});
-      console.log(data);
+    sendbird.events.onMessageReceived = (obj) => {
+      this.setState({messageList: this.state.messageList.concat([obj])});
+    };
+    this.getMessages();
+  },
+  getMessages: function() {
+    sendbird.getMessageLoadMore({
+      limit: 100,
+      successFunc: (data) => {
+        var _messageList = [];
+        data.messages.reverse().forEach(function(msg, index){
+          if(sendbird.isMessage(msg.cmd)) {
+            _messageList.push(msg.payload);
+          }
+        });
+        this.setState({ messageList: _messageList.concat(this.state.messageList) });
+      },
+      errorFunc: (status, error) => {
+        console.log(status, error);
+      }
     });
-  },  
+  },
   render: function() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.topContainer}>
+    var list = this.state.messageList.map((item, index) => {
+      return (
+        <View
+          style={styles.messageContainer}
+          key={index}
+          >
+          <Text style={this.nameLabel}>
+            {item.user.name}
+            <Text style={styles.messageLabel}> : {item.message}</Text>
+          </Text>
+        </View>
+      );
+    });
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <TouchableHighlight
+          underlayColor={'#4e4273'}
+          onPress={()=>Actions.Navigator()}
+          style={{marginLeft: 15}}
+          >
+          <Image source={require('../img/white_cross@8x.png')} style={{}} />
+        </TouchableHighlight>
+      </View>
+      <View style={styles.chatContainer}>
+        <ScrollView
+          ref={(c) => this._scrollView = c}
+          onScroll={this.handleScroll}
+          scrollEventThrottle={16}
+          onContentSizeChange={(e) => {}}>
+        {list}
+        </ScrollView>
+      </View>
+      <View style={styles.inputContainer}>
+        <View style={styles.textContainer}>
+          <TextInput
+            style={styles.input}
+            value={this.state.message}
+            onChangeText={(text) => this.setState({message: text})} />
+        </View>
+        <View style={styles.sendContainer}>
           <TouchableHighlight
             underlayColor={'#4e4273'}
-            onPress={()=>Actions.Navigator()}
-            style={{marginLeft: 15}}
+            onPress={() => this.onSendPress()}
             >
-            <Image source={require('../img/white_cross@8x.png')} style={{}} />
+            <Text style={styles.sendLabel}>SEND</Text>
           </TouchableHighlight>
         </View>
-        <View style={styles.chatContainer}>
-          <Text style={{color: '#000'}}>{this.props.friend}</Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <View style={styles.textContainer}>
-            <TextInput
-              style={styles.input}
-              value={this.state.message}
-              onChangeText={(text) => this.setState({message: text})}
-              />
-          </View>
-          <View style={styles.sendContainer}>
-            <TouchableHighlight
-              underlayColor={'white'}
-              onPress={() => this.onSendPress()}
-              >
-              <Text style={styles.sendLabel}>SEND</Text>
-            </TouchableHighlight>
-          </View>
-        </View>
       </View>
-    );
+    </View>
+  );
   },
-  onBackPress: function() {
-    this.props.navigator.pop();
-  },
-  onSendPress: function(message) {
-      sendbird.message(message);
-      this.setState({message: ''});
-    }
-  });
- 
+  onSendPress: function() {
+    sendbird.message(this.state.message);
+    this.setState({message: ''});
+  },})
+
   var styles = StyleSheet.create({
     container: {
       flex: 1,

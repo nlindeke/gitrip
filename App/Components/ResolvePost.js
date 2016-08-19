@@ -91,11 +91,30 @@ export default class ResolvePost extends Component {
 							    this.state.CounterPartId,
 							    {
 							      successFunc: (data) => {
-							        console.log(data.members.name);
-							        Actions.Chat({
-							        	channel: data.channel.id,
-							        	friend: data.members.name,
-							        });
+							      	sendbird.joinChannel
+							      	(
+							      		data.channel.channel_url,
+							      		{
+							      			successFunc: (data) => {
+							      				sendbird.connect({
+							      					successFunc: (data) => {							      						
+							      						sendbird.getChannelInfo((channel) => {
+							      							sendbird.connect({
+							      								successFunc: (data) => { Actions.Chat(); },
+							      								errorFunc: (status, error) => { console.log(status, error); }
+							      							});							      													      							
+							      						});
+							      					},
+							      					errorFunc: (status, error) => {
+							      						console.log(status, error);
+							      					}
+							      				});
+							      			},
+							      			errorFunc: (status, error) => {
+							      				console.log(status, error);
+							      			}
+							      		}
+							      	);
 							      },
 							      errorFunc: (status, error) => {
 							        console.log(status, error);
