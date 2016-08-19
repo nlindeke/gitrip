@@ -100,7 +100,15 @@ export default class ResolvePost extends Component {
 							      					successFunc: (data) => {							      						
 							      						sendbird.getChannelInfo((channel) => {
 							      							sendbird.connect({
-							      								successFunc: (data) => { Actions.Chat(); },
+							      								successFunc: (data) => 
+							      								{ 
+							      									Actions.Chat(
+							      									{
+							      										name: this.props.name, 
+							      										url: channel.channel_url,
+							      										friendpic: this.props.imgSrc,
+							      									});
+							      								},
 							      								errorFunc: (status, error) => { console.log(status, error); }
 							      							});							      													      							
 							      						});

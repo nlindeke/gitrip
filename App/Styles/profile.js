@@ -25,5 +25,13 @@ var profile = StyleSheet.create({
     	height: NavigatorNavigationBarStyles.General.TotalNavHeight,
 
     },
+    rightButton: {
+        position: 'absolute',
+        right: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: NavigatorNavigationBarStyles.General.TotalNavHeight,
+
+    },    
 });
 module.exports= profile;

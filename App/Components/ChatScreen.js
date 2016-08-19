@@ -7,6 +7,7 @@ import {
   View,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   TextInput,
   Dimensions,
   StyleSheet,
@@ -65,52 +66,94 @@ module.exports = React.createClass({
   },
   render: function() {
     var list = this.state.messageList.map((item, index) => {
+      if (item.user.name === this.props.name) {
       return (
-        <View
-          style={styles.messageContainer}
-          key={index}
-          >
-          <Text style={this.nameLabel}>
-            {item.user.name}
-            <Text style={styles.messageLabel}> : {item.message}</Text>
+        <View key={index}>
+          <Text style={{color: colors.General.nav, fontWeight: '500', padding: 10}}>
+          {item.user.name} : 
+            <Text style={{color: '#666'}}> {item.message}</Text>
           </Text>
         </View>
-      );
+      );        
+    } else {
+      return (
+        <View
+          style={{justifyContent: 'flex-end'}}
+          key={index}
+          >
+          <Text style={{color: colors.General.nav, fontWeight: '500', padding: 10}}>
+            You : 
+            <Text style={{color: '#666'}}> {item.message}</Text>
+          </Text>
+        </View>
+        );
+    }
+
     });
 
   return (
     <View style={styles.container}>
-      <View style={styles.topContainer}>
-        <TouchableHighlight
-          underlayColor={'#4e4273'}
-          onPress={()=>Actions.Navigator()}
-          style={{marginLeft: 15}}
-          >
-          <Image source={require('../img/white_cross@8x.png')} style={{}} />
-        </TouchableHighlight>
+      <View style={[profile.topContainer, {backgroundColor: colors.General.nav}]}>
+        <TouchableOpacity  style={profile.leftButton} onPress={() => Actions.Navigator()}>
+          <Image source={require('../img/white_cross@8x.png')} />
+        </TouchableOpacity>
+        <Image source={{uri: this.props.friendpic}} style={{borderColor: 'white', padding: 10, marginRight: 10, borderWidth: 2, height: 30, width: 30, borderRadius: 5}} />
+        <Text style={{fontSize: 18, color: colors.General.text}}> {this.props.name} </Text>       
       </View>
+      <View style={{
+        backgroundColor: 'white', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        height: 40, 
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: colors.General.line,
+      }}>
+        <TouchableOpacity  onPress={() =>
+          sendbird.endMessaging(
+            this.props.url,
+            {
+              successFunc: (data) => {              
+                Actions.Navigator();
+              },
+              errorFunc: (status, error) => {
+                console.log(status, error);
+              }
+            }
+          )         
+        }>
+          <Text style={{fontSize: 12, color: colors.General.nav}}>Problem Solved</Text>
+        </TouchableOpacity>       
+      </View>
+
       <View style={styles.chatContainer}>
         <ScrollView
           ref={(c) => this._scrollView = c}
           onScroll={this.handleScroll}
           scrollEventThrottle={16}
-          onContentSizeChange={(e) => {}}>
+          onContentSizeChange={(e) => {}}
+          style={{padding: 15}}>
         {list}
         </ScrollView>
       </View>
       <View style={styles.inputContainer}>
         <View style={styles.textContainer}>
           <TextInput
+              keyboardType={'default'}
+              maxLength={200}
+              autoFocus={true}
+              blurOnSubmit={true}
+              enablesReturnKeyAutomatically={true}
+              returnKeyType='done'          
             style={styles.input}
             value={this.state.message}
             onChangeText={(text) => this.setState({message: text})} />
         </View>
         <View style={styles.sendContainer}>
           <TouchableHighlight
-            underlayColor={'#4e4273'}
-            onPress={() => this.onSendPress()}
-            >
-            <Text style={styles.sendLabel}>SEND</Text>
+            onPress={() => 
+              this.onSendPress()
+            }>
+            <Image style={styles.sendLabel} source={require('../img/send@15x.png')} style={{}} />
           </TouchableHighlight>
         </View>
       </View>
@@ -127,35 +170,42 @@ module.exports = React.createClass({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'stretch',
-      backgroundColor: '#ffffff'
+      backgroundColor: colors.General.nav
     },
     topContainer: {
       flex: 1,
       flexDirection: 'row',
-      justifyContent: 'flex-start',
+      justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors.General.nav,
-      paddingTop: 20,
+      paddingTop: 40,
+      marginTop: 100,
     },
     chatContainer: {
       flex: 11,
       justifyContent: 'center',
-      alignItems: 'stretch'
+      alignItems: 'stretch',
+      backgroundColor: 'white',
     },
     inputContainer: {
       flex: 1,
       flexDirection: 'row',
       justifyContent: 'space-around',
       alignItems: 'center',
-      backgroundColor: colors.General.nav
+      backgroundColor: 'white',
+      padding: 10,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: '#999',
     },
     textContainer: {
       flex: 1,
-      justifyContent: 'center'
+      justifyContent: 'center',
+      backgroundColor: '#fff',
     },
     sendContainer: {
       justifyContent: 'flex-end',
-      paddingRight: 10
+      paddingRight: 5,
+      padding: 5,
     },
     sendLabel: {
       color: '#ffffff',
@@ -168,10 +218,11 @@ module.exports = React.createClass({
       paddingLeft: 10,
       paddingTop: 5,
       height: 32,
-      borderColor: colors.General.nav,
+      borderRadius: 10,
+      borderColor: '#ccc',
       borderWidth: 1,
-      borderRadius: 2,
+      borderRadius: 8,
       alignSelf: 'center',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#eee'
     },
   });
