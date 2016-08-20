@@ -18,8 +18,8 @@ import {
 } from 'react-native';
 
 import {Actions} from 'react-native-router-flux';
+import InvertibleScrollView from 'react-native-invertible-scroll-view';
 import profile from '../Styles/profile';
-
 
 var sendbird = require('sendbird');
 var windowSize = Dimensions.get('window');
@@ -31,6 +31,7 @@ var Method = require('../Services/Methods');
 
 var DirEmitter = NativeModules.DirectoryEmitter;
 var AccessToken = DirEmitter.Token;
+var footerY;
 
 const FBSDK = require('react-native-fbsdk'); 
 
@@ -41,12 +42,21 @@ module.exports = React.createClass({
       messageList: []
     };
   },
+  componentDidMount: function () {
+      setTimeout(()=>{
+          this._scrollToBottom();
+      },100);
+  },  
   componentWillMount: function() {
     sendbird.events.onMessageReceived = (obj) => {
       this.setState({messageList: this.state.messageList.concat([obj])});
     };
     this.getMessages();
   },
+  _scrollToBottom: function () {
+          let scrollResponder = this.refs.messagesList.getScrollResponder();
+          scrollResponder.scrollResponderScrollTo({x: 0, y: 10000, animated: false});
+  },  
   getMessages: function() {
     sendbird.getMessageLoadMore({
       limit: 100,
@@ -73,18 +83,23 @@ module.exports = React.createClass({
           {item.user.name} : 
             <Text style={{color: '#666'}}> {item.message}</Text>
           </Text>
+          <View onLayout={(e)=> {
+            footerY = e.nativeEvent.layout.y;
+            }}/>          
         </View>
       );        
     } else {
       return (
         <View
           style={{justifyContent: 'flex-end'}}
-          key={index}
-          >
+          key={index}>
           <Text style={{color: colors.General.nav, fontWeight: '500', padding: 10}}>
             You : 
             <Text style={{color: '#666'}}> {item.message}</Text>
           </Text>
+          <View onLayout={(e)=> {
+            footerY = e.nativeEvent.layout.y;
+            }}/>          
         </View>
         );
     }
@@ -101,13 +116,16 @@ module.exports = React.createClass({
         <Text style={{fontSize: 18, color: colors.General.text}}> {this.props.name} </Text>       
       </View>
       <View style={{
-        backgroundColor: 'white', 
+        backgroundColor: 'white',
+        flex: 1,
+        flexDirection: 'row',
         alignItems: 'center', 
         justifyContent: 'center', 
         height: 40, 
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: colors.General.line,
       }}>
+      <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center', borderRightWidth: StyleSheet.hairlineWidth, borderRightColor: colors.General.line}}>
         <TouchableOpacity  onPress={() =>
           sendbird.endMessaging(
             this.props.url,
@@ -122,39 +140,58 @@ module.exports = React.createClass({
           )         
         }>
           <Text style={{fontSize: 12, color: colors.General.nav}}>Problem Solved</Text>
-        </TouchableOpacity>       
+        </TouchableOpacity>
+        </View>
+        <View style={{flex: 0.5, alignItems: 'center', justifyContent: 'center'}}>
+        <TouchableOpacity  onPress={() =>
+          sendbird.endMessaging(
+            this.props.url,
+            {
+              successFunc: (data) => {              
+                Actions.Navigator();
+              },
+              errorFunc: (status, error) => {
+                console.log(status, error);
+              }
+            }
+          )         
+        }>
+          <Text style={{fontSize: 12, color: colors.General.nav}}>Problem Not Solved</Text>
+        </TouchableOpacity>  
+        </View>      
+
       </View>
 
       <View style={styles.chatContainer}>
+      
         <ScrollView
-          ref={(c) => this._scrollView = c}
-          onScroll={this.handleScroll}
-          scrollEventThrottle={16}
-          onContentSizeChange={(e) => {}}
-          style={{padding: 15}}>
+          ref='messagesList'
+          automaticallyAdjustContentInsets={false}
+          scrollEventThrottle={200}>
         {list}
         </ScrollView>
+      
       </View>
+
       <View style={styles.inputContainer}>
         <View style={styles.textContainer}>
           <TextInput
               keyboardType={'default'}
-              maxLength={200}
               autoFocus={true}
               blurOnSubmit={true}
               enablesReturnKeyAutomatically={true}
-              returnKeyType='done'          
+              returnKeyType='done'
             style={styles.input}
             value={this.state.message}
             onChangeText={(text) => this.setState({message: text})} />
         </View>
         <View style={styles.sendContainer}>
-          <TouchableHighlight
+          <TouchableOpacity
             onPress={() => 
               this.onSendPress()
             }>
             <Image style={styles.sendLabel} source={require('../img/send@15x.png')} style={{}} />
-          </TouchableHighlight>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -195,16 +232,18 @@ module.exports = React.createClass({
       backgroundColor: 'white',
       padding: 10,
       borderTopWidth: StyleSheet.hairlineWidth,
-      borderTopColor: '#999',
+      borderTopColor: colors.General.line,
     },
     textContainer: {
       flex: 1,
       justifyContent: 'center',
       backgroundColor: '#fff',
+      padding: 10,
     },
     sendContainer: {
       justifyContent: 'flex-end',
       paddingRight: 5,
+      paddingLeft: 5,
       padding: 5,
     },
     sendLabel: {
@@ -212,14 +251,14 @@ module.exports = React.createClass({
       fontSize: 15
     },
     input: {
-      width: windowSize.width - 70,
+      width: windowSize.width - 80,
       color: '#555555',
       paddingRight: 10,
       paddingLeft: 10,
       paddingTop: 5,
       height: 32,
       borderRadius: 10,
-      borderColor: '#ccc',
+      borderColor: colors.General.line,
       borderWidth: 1,
       borderRadius: 8,
       alignSelf: 'center',

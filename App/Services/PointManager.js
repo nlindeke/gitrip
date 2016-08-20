@@ -90,7 +90,7 @@ exports.stars = function(Karma) {
     return smallThree
   } else if ( Karma < 20 ) {
     return smallWhite
-  } else if( Karma < 160 && Karma > 110 ){
+  } else if( Karma < 160 && Karma >= 110 ){
     return (
       {
         star: smallWhite,
