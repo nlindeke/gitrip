@@ -92,7 +92,7 @@ export default class OnGoing extends Component {
         </View>
       );
   }
-  renderRow(rowData, rowID) { 
+  renderRow(rowData, rowID) {
     return (
       <ResolveView
         id={rowData.post.id}

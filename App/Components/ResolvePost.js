@@ -96,8 +96,10 @@ export default class ResolvePost extends Component {
 							      		data.channel.channel_url,
 							      		{
 							      			successFunc: (data) => {
+
 							      				sendbird.connect({
-							      					successFunc: (data) => {							      						
+							      					successFunc: (data) => {
+
 							      						sendbird.getChannelInfo((channel) => {
 							      							sendbird.connect({
 							      								successFunc: (data) => 

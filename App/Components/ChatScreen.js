@@ -41,22 +41,13 @@ module.exports = React.createClass({
       message: '',
       messageList: []
     };
-  },
-  componentDidMount: function () {
-      setTimeout(()=>{
-          this._scrollToBottom();
-      },100);
-  },  
+  }, 
   componentWillMount: function() {
     sendbird.events.onMessageReceived = (obj) => {
       this.setState({messageList: this.state.messageList.concat([obj])});
     };
     this.getMessages();
-  },
-  _scrollToBottom: function () {
-          let scrollResponder = this.refs.messagesList.getScrollResponder();
-          scrollResponder.scrollResponderScrollTo({x: 0, y: 10000, animated: false});
-  },  
+  }, 
   getMessages: function() {
     sendbird.getMessageLoadMore({
       limit: 100,
@@ -165,7 +156,7 @@ module.exports = React.createClass({
       <View style={styles.chatContainer}>
       
         <ScrollView
-          ref='messagesList'
+          ref='_ScrollView'
           automaticallyAdjustContentInsets={false}
           scrollEventThrottle={200}>
         {list}
