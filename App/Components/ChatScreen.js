@@ -47,7 +47,26 @@ module.exports = React.createClass({
       this.setState({messageList: this.state.messageList.concat([obj])});
     };
     this.getMessages();
-  }, 
+  },
+  componentDidUpdate: function() {
+    let innerScrollView = this._scrollView.refs.InnerScrollView;
+    let scrollView = this._scrollView.refs.ScrollView;
+
+    requestAnimationFrame(() => {
+        innerScrollView.measure((innerScrollViewX, innerScrollViewY, innerScrollViewWidth, innerScrollViewHeight) => {
+            scrollView.measure((scrollViewX, scrollViewY, scrollViewWidth, scrollViewHeight) => {
+                var scrollTo = innerScrollViewHeight - scrollViewHeight + innerScrollViewY;
+
+
+                if (innerScrollViewHeight < scrollViewHeight) {
+                    return;
+                }
+
+                this._scrollView.scrollTo({y: scrollTo});
+            });
+        });
+    });    
+  },
   getMessages: function() {
     sendbird.getMessageLoadMore({
       limit: 100,
@@ -156,10 +175,10 @@ module.exports = React.createClass({
       <View style={styles.chatContainer}>
       
         <ScrollView
-          ref='_ScrollView'
+          ref={component => this._scrollView = component}
           automaticallyAdjustContentInsets={false}
           scrollEventThrottle={200}>
-        {list}
+          {list}
         </ScrollView>
       
       </View>
